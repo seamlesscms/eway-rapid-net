@@ -31,7 +31,7 @@ namespace eWAY.Rapid
         /// <returns>String with a description for the given code in the specified language</returns>
         public static string UserDisplayMessage(string errorCode, string language)
         {
-            ResourceManager rm = new ResourceManager("eWAY.Rapid.Resources.ErrorMessages", Assembly.GetExecutingAssembly());
+            ResourceManager rm = new ResourceManager("eWAY.Rapid.Resources.ErrorMessages", typeof(RapidClientFactory).GetTypeInfo().Assembly);
 
             string result = null;
 

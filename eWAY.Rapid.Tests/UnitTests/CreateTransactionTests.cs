@@ -4,15 +4,15 @@ using eWAY.Rapid.Internals.Enums;
 using eWAY.Rapid.Internals.Request;
 using eWAY.Rapid.Internals.Response;
 using eWAY.Rapid.Internals.Services;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 using Moq;
 
 namespace eWAY.Rapid.Tests.UnitTests
 {
-    [TestClass]
+
     public class CreateTransactionTests
     {
-        [TestMethod]
+        [Fact]
         public void CreateTransaction_Direct_CaptureTrue_InvokeDirectPayment()
         {
             var mockRapidApiClient = new Mock<IRapidService>();
@@ -20,14 +20,14 @@ namespace eWAY.Rapid.Tests.UnitTests
             //Arrange
             var transaction = TestUtil.CreateTransaction(true);
             mockRapidApiClient.Setup(x => x.IsValid()).Returns(true);
-            mockRapidApiClient.Setup(x => x.DirectPayment(It.IsAny<DirectPaymentRequest>())).Returns(new DirectPaymentResponse()).Verifiable();
+            mockRapidApiClient.Setup(x => x.DirectPayment(It.IsAny<DirectPaymentRequest>())).ReturnsAsync(new DirectPaymentResponse()).Verifiable();
             //Act
             rapidSdkClient.Create(PaymentMethod.Direct, transaction);
             //Assert
             mockRapidApiClient.Verify();
         }
 
-        [TestMethod]
+        [Fact]
         public void CreateTransaction_ResponsiveShared_CaptureTrue_TokenNo_InvokeCreateAccessCodeShared()
         {
             var mockRapidApiClient = new Mock<IRapidService>();
@@ -35,14 +35,14 @@ namespace eWAY.Rapid.Tests.UnitTests
             //Arrange
             var transaction = TestUtil.CreateTransaction(true);
             mockRapidApiClient.Setup(x => x.IsValid()).Returns(true);
-            mockRapidApiClient.Setup(x => x.CreateAccessCodeShared(It.IsAny<CreateAccessCodeSharedRequest>())).Returns(new CreateAccessCodeSharedResponse()).Verifiable();
+            mockRapidApiClient.Setup(x => x.CreateAccessCodeShared(It.IsAny<CreateAccessCodeSharedRequest>())).ReturnsAsync(new CreateAccessCodeSharedResponse()).Verifiable();
             //Act
             rapidSdkClient.Create(PaymentMethod.ResponsiveShared, transaction);
             //Assert
             mockRapidApiClient.Verify();
         }
 
-        [TestMethod]
+        [Fact]
         public void CreateTransaction_ResponsiveShared_CaptureTrue_TokenYes_InvokeCreateAccessCodeShared_TokenPayment()
         {
             var mockRapidApiClient = new Mock<IRapidService>();
@@ -53,15 +53,15 @@ namespace eWAY.Rapid.Tests.UnitTests
             mockRapidApiClient.Setup(x => x.IsValid()).Returns(true);
             mockRapidApiClient.Setup(x => x.CreateAccessCodeShared(It.IsAny<CreateAccessCodeSharedRequest>()))
                 .Callback<CreateAccessCodeSharedRequest>(i => assertRequest = i)
-                .Returns(new CreateAccessCodeSharedResponse()).Verifiable();
+                .ReturnsAsync(new CreateAccessCodeSharedResponse()).Verifiable();
             //Act
             rapidSdkClient.Create(PaymentMethod.ResponsiveShared, transaction);
             //Assert
             mockRapidApiClient.Verify();
-            Assert.IsNotNull(assertRequest);
-            Assert.AreEqual(assertRequest.Method, Method.TokenPayment);
+            Assert.NotNull(assertRequest);
+            Assert.Equal(assertRequest.Method, Method.TokenPayment);
         }
-        [TestMethod]
+        [Fact]
         public void CreateTransaction_TransparentRedirect_CaptureTrue_TokenNo_InvokeCreateAccessCode()
         {
             var mockRapidApiClient = new Mock<IRapidService>();
@@ -69,13 +69,13 @@ namespace eWAY.Rapid.Tests.UnitTests
             //Arrange
             var transaction = TestUtil.CreateTransaction(true);
             mockRapidApiClient.Setup(x => x.IsValid()).Returns(true);
-            mockRapidApiClient.Setup(x => x.CreateAccessCode(It.IsAny<CreateAccessCodeRequest>())).Returns(new CreateAccessCodeResponse()).Verifiable();
+            mockRapidApiClient.Setup(x => x.CreateAccessCode(It.IsAny<CreateAccessCodeRequest>())).ReturnsAsync(new CreateAccessCodeResponse()).Verifiable();
             //Act
             rapidSdkClient.Create(PaymentMethod.TransparentRedirect, transaction);
             //Assert
             mockRapidApiClient.Verify();
         }
-        [TestMethod]
+        [Fact]
         public void CreateTransaction_TransparentRedirect_CaptureTrue_TokenYes_InvokeCreateAccessCode_TokenPayment()
         {
             var mockRapidApiClient = new Mock<IRapidService>();
@@ -86,15 +86,15 @@ namespace eWAY.Rapid.Tests.UnitTests
             mockRapidApiClient.Setup(x => x.IsValid()).Returns(true);
             mockRapidApiClient.Setup(x => x.CreateAccessCode(It.IsAny<CreateAccessCodeRequest>()))
                 .Callback<CreateAccessCodeRequest>(i => assertRequest = i)
-                .Returns(new CreateAccessCodeResponse()).Verifiable();
+                .ReturnsAsync(new CreateAccessCodeResponse()).Verifiable();
             //Act
             rapidSdkClient.Create(PaymentMethod.TransparentRedirect, transaction);
             //Assert
             mockRapidApiClient.Verify();
-            Assert.IsNotNull(assertRequest);
-            Assert.AreEqual(assertRequest.Method, Method.TokenPayment);
+            Assert.NotNull(assertRequest);
+            Assert.Equal(assertRequest.Method, Method.TokenPayment);
         }
-        [TestMethod]
+        [Fact]
         public void CreateTransaction_TransparentRedirect_CreateTokenTrue_InvokeCreateAccessCode_TokenPayment()
         {
             var mockRapidApiClient = new Mock<IRapidService>();
@@ -105,16 +105,16 @@ namespace eWAY.Rapid.Tests.UnitTests
             mockRapidApiClient.Setup(x => x.IsValid()).Returns(true);
             mockRapidApiClient.Setup(x => x.CreateAccessCode(It.IsAny<CreateAccessCodeRequest>()))
                 .Callback<CreateAccessCodeRequest>(i => assertRequest = i)
-                .Returns(new CreateAccessCodeResponse()).Verifiable();
+                .ReturnsAsync(new CreateAccessCodeResponse()).Verifiable();
             //Act
             rapidSdkClient.Create(PaymentMethod.TransparentRedirect, transaction);
             //Assert
             mockRapidApiClient.Verify();
-            Assert.IsNotNull(assertRequest);
-            Assert.AreEqual(Method.TokenPayment, assertRequest.Method);
+            Assert.NotNull(assertRequest);
+            Assert.Equal(Method.TokenPayment, assertRequest.Method);
         }
-        
-        [TestMethod]
+
+        [Fact]
         public void CreateTransaction_Authorisation_InvokeDirectAuthorisation()
         {
             var mockRapidApiClient = new Mock<IRapidService>();
@@ -122,13 +122,13 @@ namespace eWAY.Rapid.Tests.UnitTests
             //Arrange
             var transaction = TestUtil.CreateTransaction(false);
             mockRapidApiClient.Setup(x => x.IsValid()).Returns(true);
-            mockRapidApiClient.Setup(x => x.DirectAuthorisation(It.IsAny<DirectAuthorisationRequest>())).Returns(new DirectAuthorisationResponse()).Verifiable();
+            mockRapidApiClient.Setup(x => x.DirectAuthorisation(It.IsAny<DirectAuthorisationRequest>())).ReturnsAsync(new DirectAuthorisationResponse()).Verifiable();
             //Act
             rapidSdkClient.Create(PaymentMethod.Authorisation, transaction);
             //Assert
             mockRapidApiClient.Verify();
         }
-        [TestMethod]
+        [Fact]
         public void CreateTransaction_Direct_CaptureFalse_InvokeDirectPayment_MethodAuthorise()
         {
             var mockRapidApiClient = new Mock<IRapidService>();
@@ -139,15 +139,15 @@ namespace eWAY.Rapid.Tests.UnitTests
             mockRapidApiClient.Setup(x => x.IsValid()).Returns(true);
             mockRapidApiClient.Setup(x => x.DirectPayment(It.IsAny<DirectPaymentRequest>()))
                 .Callback<DirectPaymentRequest>(i => assertRequest = i)
-                .Returns(new DirectPaymentResponse()).Verifiable();
+                .ReturnsAsync(new DirectPaymentResponse()).Verifiable();
             //Act
             rapidSdkClient.Create(PaymentMethod.Direct, transaction);
             //Assert
             mockRapidApiClient.Verify();
-            Assert.IsNotNull(assertRequest);
-            Assert.AreEqual(assertRequest.Method, Method.Authorise);
+            Assert.NotNull(assertRequest);
+            Assert.Equal(assertRequest.Method, Method.Authorise);
         }
-        [TestMethod]
+        [Fact]
         public void CreateTransaction_ResponsiveShared_CaptureFalse_InvokeCreateAccessCodeShared_MethodAuthorise()
         {
             var mockRapidApiClient = new Mock<IRapidService>();
@@ -158,15 +158,15 @@ namespace eWAY.Rapid.Tests.UnitTests
             mockRapidApiClient.Setup(x => x.IsValid()).Returns(true);
             mockRapidApiClient.Setup(x => x.CreateAccessCodeShared(It.IsAny<CreateAccessCodeSharedRequest>()))
                 .Callback<CreateAccessCodeSharedRequest>(i => assertRequest = i)
-                .Returns(new CreateAccessCodeSharedResponse()).Verifiable();
+                .ReturnsAsync(new CreateAccessCodeSharedResponse()).Verifiable();
             //Act
             rapidSdkClient.Create(PaymentMethod.ResponsiveShared, transaction);
             //Assert
             mockRapidApiClient.Verify();
-            Assert.IsNotNull(assertRequest);
-            Assert.AreEqual(assertRequest.Method, Method.Authorise);
+            Assert.NotNull(assertRequest);
+            Assert.Equal(assertRequest.Method, Method.Authorise);
         }
-        [TestMethod]
+        [Fact]
         public void CreateTransaction_TransparentRedirect_CaptureFalse_InvokeCreateAccessCode_MethodAuthorise()
         {
             var mockRapidApiClient = new Mock<IRapidService>();
@@ -177,16 +177,16 @@ namespace eWAY.Rapid.Tests.UnitTests
             mockRapidApiClient.Setup(x => x.IsValid()).Returns(true);
             mockRapidApiClient.Setup(x => x.CreateAccessCode(It.IsAny<CreateAccessCodeRequest>()))
                 .Callback<CreateAccessCodeRequest>(i => assertRequest = i)
-                .Returns(new CreateAccessCodeResponse()).Verifiable();
+                .ReturnsAsync(new CreateAccessCodeResponse()).Verifiable();
             //Act
             rapidSdkClient.Create(PaymentMethod.TransparentRedirect, transaction);
             //Assert
             mockRapidApiClient.Verify();
-            Assert.IsNotNull(assertRequest);
-            Assert.AreEqual(assertRequest.Method, Method.Authorise);
+            Assert.NotNull(assertRequest);
+            Assert.Equal(assertRequest.Method, Method.Authorise);
         }
 
-        [TestMethod]
+        [Fact]
         public void CreateTransaction_Wallet_CaptureTrue_InvokeDirectPayment_MethodProcessPayment()
         {
             var mockRapidApiClient = new Mock<IRapidService>();
@@ -198,16 +198,16 @@ namespace eWAY.Rapid.Tests.UnitTests
             mockRapidApiClient.Setup(x => x.IsValid()).Returns(true);
             mockRapidApiClient.Setup(x => x.DirectPayment(It.IsAny<DirectPaymentRequest>()))
                 .Callback<DirectPaymentRequest>(i => assertRequest = i)
-                .Returns(new DirectPaymentResponse()).Verifiable();
+                .ReturnsAsync(new DirectPaymentResponse()).Verifiable();
             //Act
             rapidSdkClient.Create(PaymentMethod.Wallet, transaction);
             //Assert
             mockRapidApiClient.Verify();
-            Assert.IsNotNull(assertRequest);
-            Assert.AreEqual(assertRequest.Method, Method.ProcessPayment);
+            Assert.NotNull(assertRequest);
+            Assert.Equal(assertRequest.Method, Method.ProcessPayment);
         }
 
-        [TestMethod]        
+        [Fact]
         public void CreateTransaction_Wallet_CaptureFalse_InvokeDirectAuthorisation()
         {
             var mockRapidApiClient = new Mock<IRapidService>();
@@ -216,7 +216,7 @@ namespace eWAY.Rapid.Tests.UnitTests
             var transaction = TestUtil.CreateTransaction(false);
             transaction.SecuredCardData = "123123123";
             mockRapidApiClient.Setup(x => x.IsValid()).Returns(true);
-            mockRapidApiClient.Setup(x => x.DirectAuthorisation(It.IsAny<DirectAuthorisationRequest>())).Returns(new DirectAuthorisationResponse()).Verifiable();
+            mockRapidApiClient.Setup(x => x.DirectAuthorisation(It.IsAny<DirectAuthorisationRequest>())).ReturnsAsync(new DirectAuthorisationResponse()).Verifiable();
             //Act
             rapidSdkClient.Create(PaymentMethod.Wallet, transaction);
             //Assert

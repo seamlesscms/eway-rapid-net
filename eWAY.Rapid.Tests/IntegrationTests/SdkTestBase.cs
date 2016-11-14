@@ -1,13 +1,23 @@
-﻿using System.Configuration;
+﻿using Microsoft.Extensions.Configuration;
 
 namespace eWAY.Rapid.Tests.IntegrationTests
 {
     public abstract class SdkTestBase
     {
-        public static string PASSWORD = ConfigurationManager.AppSettings["PASSWORD"];
-        public static string APIKEY = ConfigurationManager.AppSettings["APIKEY"];
-        public static string ENDPOINT = ConfigurationManager.AppSettings["ENDPOINT"];
-        public static int APIVERSION = int.Parse(ConfigurationManager.AppSettings["APIVERSION"]);
+        static SdkTestBase()
+        {
+            var builder = new ConfigurationBuilder().AddJsonFile("appsettings.json").AddEnvironmentVariables().Build();
+            var props = builder.GetSection("settings");
+            PASSWORD = props["PASSWORD"];
+            APIKEY = props["APIKEY"];
+            ENDPOINT = props["ENDPOINT"];
+            APIVERSION = int.Parse(props["APIVERSION"]);
+        }
+
+        public static string PASSWORD { get; private set; }
+        public static string APIKEY  { get; private set; }
+        public static string ENDPOINT  { get; private set; }
+        public static int APIVERSION  { get; private set; }
 
         protected IRapidClient CreateRapidApiClient()
         {

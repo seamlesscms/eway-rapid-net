@@ -4,7 +4,7 @@ using eWAY.Rapid.Enums;
 using eWAY.Rapid.Internals.Models;
 using eWAY.Rapid.Internals.Response;
 using eWAY.Rapid.Models;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 using CardDetails = eWAY.Rapid.Models.CardDetails;
 using Customer = eWAY.Rapid.Models.Customer;
 using LineItem = eWAY.Rapid.Models.LineItem;
@@ -283,54 +283,54 @@ namespace eWAY.Rapid.Tests
         //Assertion helpers
         internal static void AssertReturnedCustomerData_VerifyAddressAreEqual(Customer responseCustomer, Customer requestCustomer)
         {
-            Assert.AreEqual(responseCustomer.Address.State, requestCustomer.Address.State);
-            Assert.AreEqual(responseCustomer.Address.City, requestCustomer.Address.City);
-            Assert.AreEqual(responseCustomer.Address.Country, requestCustomer.Address.Country);
-            Assert.AreEqual(responseCustomer.Address.PostalCode, requestCustomer.Address.PostalCode);
-            Assert.AreEqual(responseCustomer.Address.Street1, requestCustomer.Address.Street1);
-            Assert.AreEqual(responseCustomer.Address.Street2, requestCustomer.Address.Street2);
+            Assert.Equal(responseCustomer.Address.State, requestCustomer.Address.State);
+            Assert.Equal(responseCustomer.Address.City, requestCustomer.Address.City);
+            Assert.Equal(responseCustomer.Address.Country, requestCustomer.Address.Country);
+            Assert.Equal(responseCustomer.Address.PostalCode, requestCustomer.Address.PostalCode);
+            Assert.Equal(responseCustomer.Address.Street1, requestCustomer.Address.Street1);
+            Assert.Equal(responseCustomer.Address.Street2, requestCustomer.Address.Street2);
         }
 
         internal static void AssertReturnedCustomerData_VerifyCardDetailsAreEqual(Customer responseCustomer, Customer requestCustomer)
         {
             if (!string.IsNullOrWhiteSpace(responseCustomer.CardDetails.ExpiryMonth) &&
                 !string.IsNullOrWhiteSpace(requestCustomer.CardDetails.ExpiryMonth))
-                Assert.AreEqual(responseCustomer.CardDetails.ExpiryMonth, requestCustomer.CardDetails.ExpiryMonth);
+                Assert.Equal(responseCustomer.CardDetails.ExpiryMonth, requestCustomer.CardDetails.ExpiryMonth);
 
             if (!string.IsNullOrWhiteSpace(responseCustomer.CardDetails.ExpiryYear) &&
                 !string.IsNullOrWhiteSpace(requestCustomer.CardDetails.ExpiryYear))
-            Assert.AreEqual(responseCustomer.CardDetails.ExpiryYear, requestCustomer.CardDetails.ExpiryYear);
+            Assert.Equal(responseCustomer.CardDetails.ExpiryYear, requestCustomer.CardDetails.ExpiryYear);
 
             if (!string.IsNullOrWhiteSpace(responseCustomer.CardDetails.IssueNumber) &&
                 !string.IsNullOrWhiteSpace(requestCustomer.CardDetails.IssueNumber))
-            Assert.AreEqual(responseCustomer.CardDetails.IssueNumber, requestCustomer.CardDetails.IssueNumber);
+            Assert.Equal(responseCustomer.CardDetails.IssueNumber, requestCustomer.CardDetails.IssueNumber);
 
             if (!string.IsNullOrWhiteSpace(responseCustomer.CardDetails.Name) &&
                 !string.IsNullOrWhiteSpace(requestCustomer.CardDetails.Name))
-            Assert.AreEqual(responseCustomer.CardDetails.Name, requestCustomer.CardDetails.Name);
+            Assert.Equal(responseCustomer.CardDetails.Name, requestCustomer.CardDetails.Name);
 
             if (!string.IsNullOrWhiteSpace(responseCustomer.CardDetails.StartMonth) &&
                 !string.IsNullOrWhiteSpace(requestCustomer.CardDetails.StartMonth))
-            Assert.AreEqual(responseCustomer.CardDetails.StartMonth, requestCustomer.CardDetails.StartMonth);
+            Assert.Equal(responseCustomer.CardDetails.StartMonth, requestCustomer.CardDetails.StartMonth);
 
             if (!string.IsNullOrWhiteSpace(responseCustomer.CardDetails.StartYear) &&
                 !string.IsNullOrWhiteSpace(requestCustomer.CardDetails.StartYear))
-            Assert.AreEqual(responseCustomer.CardDetails.StartYear, requestCustomer.CardDetails.StartYear);
+            Assert.Equal(responseCustomer.CardDetails.StartYear, requestCustomer.CardDetails.StartYear);
         }
 
         internal static void AssertReturnedCustomerData_VerifyAllFieldsAreEqual(Customer responseCustomer, Customer requestCustomer)
         {
-            Assert.AreEqual(responseCustomer.Comments, requestCustomer.Comments);
-            Assert.AreEqual(responseCustomer.CompanyName, requestCustomer.CompanyName);
-            Assert.AreEqual(responseCustomer.Fax, requestCustomer.Fax);
-            Assert.AreEqual(responseCustomer.FirstName, requestCustomer.FirstName);
-            Assert.AreEqual(responseCustomer.LastName, requestCustomer.LastName);
-            Assert.AreEqual(responseCustomer.JobDescription, requestCustomer.JobDescription);
-            Assert.AreEqual(responseCustomer.Mobile, requestCustomer.Mobile);
-            Assert.AreEqual(responseCustomer.Phone, requestCustomer.Phone);
-            Assert.AreEqual(responseCustomer.Reference, requestCustomer.Reference);
-            Assert.AreEqual(responseCustomer.Title, requestCustomer.Title);
-            Assert.AreEqual(responseCustomer.Url, requestCustomer.Url);
+            Assert.Equal(responseCustomer.Comments, requestCustomer.Comments);
+            Assert.Equal(responseCustomer.CompanyName, requestCustomer.CompanyName);
+            Assert.Equal(responseCustomer.Fax, requestCustomer.Fax);
+            Assert.Equal(responseCustomer.FirstName, requestCustomer.FirstName);
+            Assert.Equal(responseCustomer.LastName, requestCustomer.LastName);
+            Assert.Equal(responseCustomer.JobDescription, requestCustomer.JobDescription);
+            Assert.Equal(responseCustomer.Mobile, requestCustomer.Mobile);
+            Assert.Equal(responseCustomer.Phone, requestCustomer.Phone);
+            Assert.Equal(responseCustomer.Reference, requestCustomer.Reference);
+            Assert.Equal(responseCustomer.Title, requestCustomer.Title);
+            Assert.Equal(responseCustomer.Url, requestCustomer.Url);
         }
     }
 }

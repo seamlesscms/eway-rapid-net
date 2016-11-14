@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using AutoMapper;
+using AutoMapper.Configuration;
 using eWAY.Rapid.Internals.Enums;
 using eWAY.Rapid.Internals.Models;
 using eWAY.Rapid.Internals.Request;
@@ -20,36 +21,34 @@ namespace eWAY.Rapid.Internals.Services
 {
     internal class MappingService: IMappingService
     {
+        private IMapper mapper;
+
         public MappingService()
         {
-            RegisterMapping();
+            mapper = RegisterMapping(); 
         }
 
         public TDest Map<TSource, TDest>(TSource obj)
         {
-            return Mapper.Map<TSource, TDest>(obj);
+            return mapper.Map<TDest>(obj);
         }
 
-        private static bool _mappingsHaveBeenRegistered = false;
-        private static readonly object _registerMappingsMutex = new object();
-
-        public static void RegisterMapping()
+        private IMapper RegisterMapping()
         {
-            if (_mappingsHaveBeenRegistered) return;
-            lock (_registerMappingsMutex)
+            return new MapperConfiguration(config =>
             {
-                if (!_mappingsHaveBeenRegistered)
-                {
-                    RegisterRequestMapping();
-                    RegisterResponseMapping();
-                    RegisterCustomMapping();
-                    RegisterEntitiesMapping();
-                    _mappingsHaveBeenRegistered = true;
-                }
-            }
+                config.CreateMissingTypeMaps = true;
+                config.AllowNullCollections = true;
+                config.AllowNullDestinationValues = true;
+
+                RegisterRequestMapping(config);
+                RegisterResponseMapping(config);
+                RegisterCustomMapping(config);
+                RegisterEntitiesMapping(config);
+            }).CreateMapper();
         }
 
-        public static void RegisterRequestMapping()
+        public static void RegisterRequestMapping(IMapperConfigurationExpression Mapper)
         {
             Mapper.CreateMap<Transaction, DirectPaymentRequest>()
                 .ForMember(dest => dest.Items, opt => opt.MapFrom(src => src.LineItems))
@@ -71,6 +70,15 @@ namespace eWAY.Rapid.Internals.Services
                 .ForMember(dest => dest.TransactionId, opt => opt.MapFrom(src => src.AuthTransactionID)).ReverseMap();
 
             Mapper.CreateMap<Transaction, CreateAccessCodeSharedRequest>()
+                .ForMember(dest => dest.CustomView, opt => opt.ResolveUsing(src =>
+                {
+                    CustomView view;
+                    if (Enum.TryParse(src.CustomView, out view))
+                    {
+                        return (CustomView?) view;
+                    }
+                    return null;
+                }))
                 .IncludeBase<Transaction, CreateAccessCodeRequest>();
 
             Mapper.CreateMap<Customer, DirectPaymentRequest>()
@@ -97,7 +105,7 @@ namespace eWAY.Rapid.Internals.Services
                 .IncludeBase<Transaction, DirectPaymentRequest>();
         }
 
-        public static void RegisterResponseMapping()
+        public static void RegisterResponseMapping(IMapperConfigurationExpression Mapper)
         {
             //Errors
             Mapper.CreateMap<BaseResponse, Rapid.Models.BaseResponse>()
@@ -133,7 +141,10 @@ namespace eWAY.Rapid.Internals.Services
                 .IncludeBase<BaseResponse, Rapid.Models.BaseResponse>();
 
             Mapper.CreateMap<CreateAccessCodeResponse, CreateTransactionResponse>()
-                .BeforeMap((s, d) => d.Transaction = new Transaction())
+                .BeforeMap((s, d) =>
+                {
+                    d.Transaction = new Transaction();
+                })
                 .ForMember(dest => dest.Transaction, opt => opt.MapFrom(src => src))
                 .IncludeBase<BaseResponse, Rapid.Models.BaseResponse>();
 
@@ -188,9 +199,7 @@ namespace eWAY.Rapid.Internals.Services
                 .ForMember(dest => dest.TransactionID, opt => opt.MapFrom(src => src.TransactionID))
                 .ForMember(dest => dest.ProcessingDetails, opt => opt.MapFrom(src => src))
                 .ForMember(dest => dest.VerificationResult, opt => opt.MapFrom(src => src.Verification))
-                .ForMember(dest => dest.Total, opt => opt.MapFrom(src => src.TotalAmount));
-
-            Mapper.CreateMap<TransactionResult, TransactionStatus>()
+                .ForMember(dest => dest.Total, opt => opt.MapFrom(src => src.TotalAmount))
                 .ForMember(dest => dest.ProcessingDetails, opt => opt.MapFrom(src => src));
 
             Mapper.CreateMap<TransactionResult, ProcessingDetails>()
@@ -220,19 +229,18 @@ namespace eWAY.Rapid.Internals.Services
             Mapper.CreateMap<DirectCancelAuthorisationResponse, CancelAuthorisationResponse>().ReverseMap();
 
             Mapper.CreateMap<DirectSettlementSearchResponse, SettlementSearchResponse>()
-                .IncludeBase<BaseResponse, Rapid.Models.BaseResponse>();
-
-            Mapper.CreateMap<DirectSettlementSearchResponse, SettlementSearchResponse>().ReverseMap();
+                .IncludeBase<BaseResponse, Rapid.Models.BaseResponse>()
+                .ReverseMap();
         }
 
-        public static void RegisterCustomMapping()
+        public static void RegisterCustomMapping(IMapperConfigurationExpression Mapper)
         {
             Mapper.CreateMap<String, Option>().ConvertUsing(s => new Option { Value = s });
             Mapper.CreateMap<Option, String>().ConvertUsing(o => o.Value);
             Mapper.CreateMap<bool?, TransactionStatus>().AfterMap((b, t) => t.Status = b);
         }
 
-        public static void RegisterEntitiesMapping()
+        public static void RegisterEntitiesMapping(IMapperConfigurationExpression Mapper)
         {
             Mapper.CreateMap<ShippingDetails, Models.ShippingAddress>()
                 .ForMember(dest => dest.City, opt => opt.MapFrom(src => src.ShippingAddress.City))
@@ -298,7 +306,8 @@ namespace eWAY.Rapid.Internals.Services
                 .ForMember(dest => dest.PostalCode, opt => opt.MapFrom(src => src.PostalCode))
                 .ForMember(dest => dest.State, opt => opt.MapFrom(src => src.State))
                 .ForMember(dest => dest.Street1, opt => opt.MapFrom(src => src.Street1))
-                .ForMember(dest => dest.Street2, opt => opt.MapFrom(src => src.Street2)).ReverseMap();
+                .ForMember(dest => dest.Street2, opt => opt.MapFrom(src => src.Street2))
+                .ReverseMap();
 
             Mapper.CreateMap<TokenCustomer, Customer>()
                 .ForMember(dest => dest.Address, opt => opt.MapFrom(src => src))
@@ -320,18 +329,17 @@ namespace eWAY.Rapid.Internals.Services
                 .ForMember(dest => dest.CardNumber, opt => opt.MapFrom(src => src.CardDetails.Number))
                 .ForMember(dest => dest.CardStartMonth, opt => opt.MapFrom(src => src.CardDetails.StartMonth))
                 .ForMember(dest => dest.CardStartYear, opt => opt.MapFrom(src => src.CardDetails.StartYear))
-                .IncludeBase<Customer, Models.Customer>()
-                .ReverseMap();
+                .IncludeBase<Customer, Models.Customer>();
 
             Mapper.CreateMap<Customer, DirectTokenCustomer>()
-                .IncludeBase<Customer, TokenCustomer>()
-                .ReverseMap();
+                .IncludeBase<Customer, TokenCustomer>();
 
             Mapper.CreateMap<ShippingAddress, Models.ShippingAddress>().ReverseMap();
             Mapper.CreateMap<LineItem, Models.LineItem>().ReverseMap();
             Mapper.CreateMap<Rapid.Models.Option, Option>().ReverseMap();
             Mapper.CreateMap<PaymentDetails, Payment>().ReverseMap();
             Mapper.CreateMap<CardDetails, Models.CardDetails>().ReverseMap();
+            Mapper.CreateMap<Models.VerificationResult, Verification>().ReverseMap();
             Mapper.CreateMap<VerificationResult, Verification>().ReverseMap();
             Mapper.CreateMap<VerificationResult, Models.VerificationResult>().ReverseMap();
             Mapper.CreateMap<Rapid.Models.Payment, Payment>().ReverseMap();

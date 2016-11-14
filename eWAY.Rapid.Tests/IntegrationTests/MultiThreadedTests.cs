@@ -1,59 +1,50 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 using eWAY.Rapid.Enums;
 using eWAY.Rapid.Models;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 using Internal = eWAY.Rapid.Internals.Models;
 namespace eWAY.Rapid.Tests.IntegrationTests
 {
-    [TestClass]
     public class MultiThreadedTests : SdkTestBase
     {
-        [TestMethod]
+        [Fact]
         public void Multithread_CreatingMultipleClientsInManyThreads_ReturnsValidData()
         {
-            RunInMultipleThreads(20, () =>
+            RunInMultipleThreads(20, DoSingleUnitOfWork);
+
+
+        }
+
+        private async Task DoSingleUnitOfWork()
+        {
+            IRapidClient client = CreateRapidApiClient();
+            Transaction transaction = new Transaction()
             {
-
-                IRapidClient client = CreateRapidApiClient();
-                Transaction transaction = new Transaction()
+                Customer = TestUtil.CreateCustomer(),
+                PaymentDetails = new PaymentDetails()
                 {
-                    Customer = TestUtil.CreateCustomer(),
-                    PaymentDetails = new PaymentDetails()
-                    {
-                        TotalAmount =  200
-                    },
-                    TransactionType = TransactionTypes.MOTO,
-                    
+                    TotalAmount = 200
+                },
+                TransactionType = TransactionTypes.MOTO,
 
-                };
-                CreateTransactionResponse response = 
-                    client.Create(PaymentMethod.Direct, transaction);
-                });
 
-            
+            };
+            CreateTransactionResponse response = await client.Create(PaymentMethod.Direct, transaction);
         }
 
 
-        private void RunInMultipleThreads(int threadCount, Action action)
+
+        private void RunInMultipleThreads(int threadCount, Func<Task> action)
         {
-            List<Thread> startedThreads = new List<Thread>();
+            List<Task> startedThreads = new List<Task>();
             for (int i = 0; i < threadCount; i++)
             {
-                Thread thread = new Thread(() => action());
-                startedThreads.Add(thread);
-                thread.Start();
-
+                startedThreads.Add(action());
             }
-            foreach (Thread thread in startedThreads)
-            {
-                thread.Join();
-            }
-            
+            Task.WaitAll(startedThreads.ToArray());
         }
-
-
     }
 }

@@ -4,6 +4,7 @@ using System.IO;
 using System.Net;
 using System.Text;
 using System.Reflection;
+using System.Threading.Tasks;
 using eWAY.Rapid.Internals.Enums;
 using eWAY.Rapid.Internals.Request;
 using eWAY.Rapid.Internals.Response;
@@ -46,105 +47,105 @@ namespace eWAY.Rapid.Internals.Services
         }
 
 
-        public DirectCancelAuthorisationResponse CancelAuthorisation(DirectCancelAuthorisationRequest request)
+        public async Task<DirectCancelAuthorisationResponse> CancelAuthorisation(DirectCancelAuthorisationRequest request)
         {
-            return JsonPost<DirectCancelAuthorisationRequest, DirectCancelAuthorisationResponse>(request, CANCEL_AUTHORISATION);
+            return await JsonPost<DirectCancelAuthorisationRequest, DirectCancelAuthorisationResponse>(request, CANCEL_AUTHORISATION);
         }
 
-        public DirectCapturePaymentResponse CapturePayment(DirectCapturePaymentRequest request)
+        public async Task<DirectCapturePaymentResponse> CapturePayment(DirectCapturePaymentRequest request)
         {
-            return JsonPost<DirectCapturePaymentRequest, DirectCapturePaymentResponse>(request, CAPTURE_PAYMENT);
+            return await JsonPost<DirectCapturePaymentRequest, DirectCapturePaymentResponse>(request, CAPTURE_PAYMENT);
         }
 
-        public CreateAccessCodeResponse CreateAccessCode(CreateAccessCodeRequest request)
+        public async Task<CreateAccessCodeResponse> CreateAccessCode(CreateAccessCodeRequest request)
         {
-            return JsonPost<CreateAccessCodeRequest, CreateAccessCodeResponse>(request, ACCESS_CODES);
+            return await JsonPost<CreateAccessCodeRequest, CreateAccessCodeResponse>(request, ACCESS_CODES);
         }
 
-        public CreateAccessCodeResponse UpdateCustomerCreateAccessCode(CreateAccessCodeRequest request)
-        {
-            request.Method = Method.UpdateTokenCustomer;
-            return JsonPut<CreateAccessCodeRequest, CreateAccessCodeResponse>(request, ACCESS_CODES);
-        }
-
-        public CreateAccessCodeSharedResponse CreateAccessCodeShared(CreateAccessCodeSharedRequest request)
-        {
-            return JsonPost<CreateAccessCodeSharedRequest, CreateAccessCodeSharedResponse>(request, ACCESS_CODES_SHARED);
-        }
-
-        public CreateAccessCodeSharedResponse UpdateCustomerCreateAccessCodeShared(CreateAccessCodeSharedRequest request)
+        public async Task<CreateAccessCodeResponse> UpdateCustomerCreateAccessCode(CreateAccessCodeRequest request)
         {
             request.Method = Method.UpdateTokenCustomer;
-            return JsonPut<CreateAccessCodeSharedRequest, CreateAccessCodeSharedResponse>(request, ACCESS_CODES_SHARED);
+            return await JsonPut<CreateAccessCodeRequest, CreateAccessCodeResponse>(request, ACCESS_CODES);
         }
 
-        public GetAccessCodeResultResponse GetAccessCodeResult(GetAccessCodeResultRequest request)
+        public async Task<CreateAccessCodeSharedResponse> CreateAccessCodeShared(CreateAccessCodeSharedRequest request)
         {
-            return JsonGet<GetAccessCodeResultResponse>(string.Format(ACCESS_CODE_RESULT, request.AccessCode));
+            return await JsonPost<CreateAccessCodeSharedRequest, CreateAccessCodeSharedResponse>(request, ACCESS_CODES_SHARED);
         }
 
-        public DirectPaymentResponse DirectPayment(DirectPaymentRequest request)
-        {
-            return JsonPost<DirectPaymentRequest, DirectPaymentResponse>(request, DIRECT_PAYMENT);
-        }
-
-        public DirectPaymentResponse UpdateCustomerDirectPayment(DirectPaymentRequest request)
+        public async Task<CreateAccessCodeSharedResponse> UpdateCustomerCreateAccessCodeShared(CreateAccessCodeSharedRequest request)
         {
             request.Method = Method.UpdateTokenCustomer;
-            return JsonPut<DirectPaymentRequest, DirectPaymentResponse>(request, DIRECT_PAYMENT);
+            return await JsonPut<CreateAccessCodeSharedRequest, CreateAccessCodeSharedResponse>(request, ACCESS_CODES_SHARED);
         }
 
-        public DirectAuthorisationResponse DirectAuthorisation(DirectAuthorisationRequest request)
+        public async Task<GetAccessCodeResultResponse> GetAccessCodeResult(GetAccessCodeResultRequest request)
         {
-            return JsonPost<DirectAuthorisationRequest, DirectAuthorisationResponse>(request, DIRECT_PAYMENT);
+            return await JsonGet<GetAccessCodeResultResponse>(string.Format(ACCESS_CODE_RESULT, request.AccessCode));
         }
 
-        public DirectCustomerResponse DirectCustomerCreate(DirectCustomerRequest request)
+        public async Task<DirectPaymentResponse> DirectPayment(DirectPaymentRequest request)
         {
-            return JsonPost<DirectCustomerRequest, DirectCustomerResponse>(request, DIRECT_PAYMENT);
+            return await JsonPost<DirectPaymentRequest, DirectPaymentResponse>(request, DIRECT_PAYMENT);
         }
 
-        public DirectCustomerSearchResponse DirectCustomerSearch(DirectCustomerSearchRequest request)
+        public async Task<DirectPaymentResponse> UpdateCustomerDirectPayment(DirectPaymentRequest request)
         {
-            return JsonGet<DirectCustomerSearchResponse>(string.Format(QUERY_CUSTOMER, request.TokenCustomerID));
+            request.Method = Method.UpdateTokenCustomer;
+            return await JsonPut<DirectPaymentRequest, DirectPaymentResponse>(request, DIRECT_PAYMENT);
         }
 
-        public DirectRefundResponse DirectRefund(DirectRefundRequest request)
+        public async Task<DirectAuthorisationResponse> DirectAuthorisation(DirectAuthorisationRequest request)
         {
-            return JsonPost<DirectRefundRequest, DirectRefundResponse>(request, string.Format(REFUND_PAYMENT, request.Refund.TransactionID));
+            return await JsonPost<DirectAuthorisationRequest, DirectAuthorisationResponse>(request, DIRECT_PAYMENT);
         }
 
-        public TransactionSearchResponse QueryTransaction(long transactionID)
+        public async Task<DirectCustomerResponse> DirectCustomerCreate(DirectCustomerRequest request)
+        {
+            return await JsonPost<DirectCustomerRequest, DirectCustomerResponse>(request, DIRECT_PAYMENT);
+        }
+
+        public async Task<DirectCustomerSearchResponse> DirectCustomerSearch(DirectCustomerSearchRequest request)
+        {
+            return await JsonGet<DirectCustomerSearchResponse>(string.Format(QUERY_CUSTOMER, request.TokenCustomerID));
+        }
+
+        public async Task<DirectRefundResponse> DirectRefund(DirectRefundRequest request)
+        {
+            return await JsonPost<DirectRefundRequest, DirectRefundResponse>(request, string.Format(REFUND_PAYMENT, request.Refund.TransactionID));
+        }
+
+        public async Task<TransactionSearchResponse> QueryTransaction(long transactionID)
         {
             var method = string.Format(QUERY_TRANSACTION, transactionID);
-            return JsonGet<TransactionSearchResponse>(method);
+            return await JsonGet<TransactionSearchResponse>(method);
         }
 
-        public TransactionSearchResponse QueryTransaction(string accessCode)
+        public async Task<TransactionSearchResponse> QueryTransaction(string accessCode)
         {
             var method = string.Format(QUERY_TRANSACTION, accessCode);
-            return JsonGet<TransactionSearchResponse>(method);
+            return await JsonGet<TransactionSearchResponse>(method);
         }
 
-        public TransactionSearchResponse QueryInvoiceRef(string invoiceRef)
+        public async Task<TransactionSearchResponse> QueryInvoiceRef(string invoiceRef)
         {
             var method = string.Format(TRANSACTION_FILTER_INVOICE_REF, invoiceRef);
-            return JsonGet<TransactionSearchResponse>(method);
+            return await JsonGet<TransactionSearchResponse>(method);
         }
 
-        public TransactionSearchResponse QueryInvoiceNumber(string invoiceNumber)
+        public async Task<TransactionSearchResponse> QueryInvoiceNumber(string invoiceNumber)
         {
             var method = string.Format(TRANSACTION_FILTER_INVOICE_NUMBER, invoiceNumber);
-            return JsonGet<TransactionSearchResponse>(method);
+            return await JsonGet<TransactionSearchResponse>(method);
         }
 
-        public DirectSettlementSearchResponse SettlementSearch(string request)
+        public async Task<DirectSettlementSearchResponse> SettlementSearch(string request)
         {
             var method = string.Format(SETTLEMENT_SEARCH, request);
-            return JsonGet<DirectSettlementSearchResponse>(method);
+            return await JsonGet<DirectSettlementSearchResponse>(method);
         }
 
-        public TResponse JsonPost<TRequest, TResponse>(TRequest request, string method)
+        public async Task<TResponse> JsonPost<TRequest, TResponse>(TRequest request, string method)
             where TRequest : class
             where TResponse : BaseResponse, new()
         {
@@ -162,8 +163,7 @@ namespace eWAY.Rapid.Internals.Services
             try
             {
                 AddHeaders(webRequest, HttpMethods.POST.ToString());
-                webRequest.ContentLength = Encoding.UTF8.GetByteCount(jsonString);
-                var result = GetWebResponse(webRequest, jsonString);
+                var result = await GetWebResponse(webRequest, jsonString);
                 response = JsonConvert.DeserializeObject<TResponse>(result);
             }
             catch (WebException ex)
@@ -174,7 +174,7 @@ namespace eWAY.Rapid.Internals.Services
             return response;
         }
 
-        public TResponse JsonPut<TRequest, TResponse>(TRequest request, string method)
+        public async Task<TResponse> JsonPut<TRequest, TResponse>(TRequest request, string method)
             where TRequest : class
             where TResponse : BaseResponse, new()
         {
@@ -194,8 +194,7 @@ namespace eWAY.Rapid.Internals.Services
                 //TODO:
                 //This should be a PUT
                 AddHeaders(webRequest, HttpMethods.POST.ToString());
-                webRequest.ContentLength = Encoding.UTF8.GetByteCount(jsonString);
-                var result = GetWebResponse(webRequest, jsonString);
+                var result = await GetWebResponse(webRequest, jsonString);
                 response = JsonConvert.DeserializeObject<TResponse>(result);
             }
             catch (WebException ex)
@@ -206,7 +205,7 @@ namespace eWAY.Rapid.Internals.Services
             return response;
         }
 
-        public TResponse JsonGet<TResponse>(string method)
+        public async Task<TResponse> JsonGet<TResponse>(string method)
             where TResponse : BaseResponse, new()
         {
             var endpointUrl = _rapidEndpoint + method;
@@ -216,7 +215,7 @@ namespace eWAY.Rapid.Internals.Services
             try
             {
                 AddHeaders(webRequest, HttpMethods.GET.ToString());
-                string result = GetWebResponse(webRequest);
+                string result = await GetWebResponse(webRequest);
                 if (String.IsNullOrEmpty(result))
                 {
                     var errors = RapidSystemErrorCode.COMMUNICATION_ERROR;
@@ -239,14 +238,14 @@ namespace eWAY.Rapid.Internals.Services
         private void AddHeaders(HttpWebRequest webRequest, string httpMethod)
         {
             // add authentication to request
-            webRequest.Headers.Add("Authorization", _authenticationHeader);
-            webRequest.UserAgent = "eWAY SDK .NET " + Assembly.GetExecutingAssembly().GetName().Version;
+            webRequest.Headers["Authorization"] = _authenticationHeader;
+            webRequest.Headers["User-Agent"] = "eWAY SDK .NET " + typeof(RapidService).GetTypeInfo().Assembly.GetName().Version;
             webRequest.Method = httpMethod;
             webRequest.ContentType = "application/json";
 
             if (_version.HasValue)
             {
-                webRequest.Headers.Add("X-EWAY-APIVERSION", _version.ToString());
+                webRequest.Headers["X-EWAY-APIVERSION"] = _version.ToString();
             }
         }
 
@@ -269,28 +268,29 @@ namespace eWAY.Rapid.Internals.Services
             return RapidSystemErrorCode.COMMUNICATION_ERROR;
         }
 
-        public virtual string GetWebResponse(WebRequest webRequest, string content = null)
+        public virtual async Task<string> GetWebResponse(WebRequest webRequest, string content = null)
         {
             if (content != null)
             {
                 using (new MemoryStream())
                 {
-                    using (var writer = new StreamWriter(webRequest.GetRequestStream()))
+                    using (var writer = new StreamWriter(await webRequest.GetRequestStreamAsync()))
                     {
                         writer.Write(content);
-                        writer.Close();
+                        await writer.FlushAsync();
                     }
                 }
             }
 
             string result;
-            var webResponse = (HttpWebResponse)webRequest.GetResponse();
+            var webResponse = (HttpWebResponse) await webRequest.GetResponseAsync();
             using (var stream = webResponse.GetResponseStream())
             {
                 if (stream == null) return null;
-                var sr = new StreamReader(stream);
-                result = sr.ReadToEnd();
-                sr.Close();
+                using (var sr = new StreamReader(stream))
+                {
+                    result = sr.ReadToEnd();
+                }
             }
             return result;
         }

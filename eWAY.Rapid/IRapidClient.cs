@@ -1,4 +1,6 @@
+using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using eWAY.Rapid.Enums;
 using eWAY.Rapid.Models;
 
@@ -31,7 +33,7 @@ namespace eWAY.Rapid
         /// </param>
         /// <param name="transaction">Request containing the transaction details</param>
         /// <returns>CreateTransactionResponse</returns>
-        CreateTransactionResponse Create(PaymentMethod paymentMethod, Transaction transaction);
+        Task<CreateTransactionResponse> Create(PaymentMethod paymentMethod, Transaction transaction);
 
         /// <summary>
         /// This Method is used to create a token customer for the merchant in their eWAY account. 
@@ -47,7 +49,7 @@ namespace eWAY.Rapid
         /// The SDK will use the PaymentMethod parameter to determine what type of transaction to create rather than attempting to determine 
         /// the method to use implicitly (e.g. from the presence of CardDetails in a Customer).
         /// </remarks>
-        CreateCustomerResponse Create(PaymentMethod paymentMethod, Customer customer);
+        Task<CreateCustomerResponse> Create(PaymentMethod paymentMethod, Customer customer);
 
         /// <summary>
         /// This Method is used to update a token customer for the merchant in their eWAY account. 
@@ -56,14 +58,14 @@ namespace eWAY.Rapid
         /// (Direct, Responsive Shared, Transparent Redirect etc).</param>
         /// <param name="customer">Request containing the Customer details</param>
         /// <returns>CreateCustomerResponse</returns>
-        CreateCustomerResponse UpdateCustomer(PaymentMethod paymentMethod, Customer customer);
+        Task<CreateCustomerResponse> UpdateCustomer(PaymentMethod paymentMethod, Customer customer);
 
         /// <summary>
         /// This method is used to return the details of a Token Customer. This includes masked Card information for displaying in a UI to a user.
         /// </summary>
         /// <param name="tokenCustomerId">ID returned in the original create request.</param>
         /// <returns>the details of a Token Customer</returns>
-        QueryCustomerResponse QueryCustomer(long tokenCustomerId);
+        Task<QueryCustomerResponse> QueryCustomer(long tokenCustomerId);
 
         /// <summary>
         /// This method is used to determine the status of a transaction. 
@@ -76,66 +78,66 @@ namespace eWAY.Rapid
         /// So this method can be used by automated business processes to determine the state of a transaction that might 
         /// be under review.
         /// </remarks>
-        QueryTransactionResponse QueryTransaction(TransactionFilter filter);
+        Task<QueryTransactionResponse> QueryTransaction(TransactionFilter filter);
         /// <summary>
         /// Gets transaction information given an int eWAY transaction ID
         /// (wrapper for the version which uses long)
         /// </summary>
         /// <param name="transactionId">eWAY Transaction ID for the transaction</param>
         /// <returns>QueryTransactionResponse</returns>
-        QueryTransactionResponse QueryTransaction(int transactionId);
+        Task<QueryTransactionResponse> QueryTransaction(int transactionId);
         /// <summary>
         /// Gets transaction information given a long eWAY transaction ID
         /// </summary>
         /// <param name="transactionId">eWAY Transaction ID for the transaction</param>
         /// <returns>QueryTransactionResponse</returns>
-        QueryTransactionResponse QueryTransaction(long transactionId);
+        Task<QueryTransactionResponse> QueryTransaction(long transactionId);
         /// <summary>
         /// Gets transaction information given an access code
         /// </summary>
         /// <param name="accessCode">Access code for the transaction to query</param>
         /// <returns>QueryTransactionResponse</returns>
-        QueryTransactionResponse QueryTransaction(string accessCode);
+        Task<QueryTransactionResponse> QueryTransaction(string accessCode);
         /// <summary>
         /// Gets transaction information given an invoice number
         /// </summary>
         /// <param name="invoiceNumber">Merchant’s Invoice Number for the transaction</param>
         /// <returns>QueryTransactionResponse</returns>
-        QueryTransactionResponse QueryInvoiceNumber(string invoiceNumber);
+        Task<QueryTransactionResponse> QueryInvoiceNumber(string invoiceNumber);
         /// <summary>
         /// Gets transaction information given an invoice reference
         /// </summary>
         /// <param name="invoiceRef">The merchant's invoice reference</param>
         /// <returns>QueryTransactionResponse</returns>
-        QueryTransactionResponse QueryInvoiceRef(string invoiceRef);
+        Task<QueryTransactionResponse> QueryInvoiceRef(string invoiceRef);
 
         /// <summary>
         /// Refunds all or part of a previous transaction
         /// </summary>
         /// <param name="refund">Contains the details of the Refund</param>
         /// <returns>RefundResponse</returns>
-        RefundResponse Refund(Refund refund);
+        Task<RefundResponse> Refund(Refund refund);
 
         /// <summary>
         /// Complete an authorised transaction with a Capture request
         /// </summary>
         /// <param name="captureRequest">Contains the details of the Payment</param>
         /// <returns>CapturePaymentResponse</returns>
-        CapturePaymentResponse CapturePayment(CapturePaymentRequest captureRequest);
+        Task<CapturePaymentResponse> CapturePayment(CapturePaymentRequest captureRequest);
 
         /// <summary>
         /// Cancel an authorised transaction with a Cancel request
         /// </summary>
         /// <param name="cancelRequest">Contains the TransactionId of which needs to be cancelled</param>
         /// <returns>CancelAuthorisationResponse</returns>
-        CancelAuthorisationResponse CancelAuthorisation(CancelAuthorisationRequest cancelRequest);
+        Task<CancelAuthorisationResponse> CancelAuthorisation(CancelAuthorisationRequest cancelRequest);
 
         /// <summary>
         /// Perform a search of settlements with a given filter
         /// </summary>
         /// <param name="settlementSearchRequest">Contains the filter to search settlements by</param>
         /// <returns>SettlementSearchResponse</returns>
-        SettlementSearchResponse SettlementSearch(SettlementSearchRequest settlementSearchRequest);
+        Task<SettlementSearchResponse> SettlementSearch(SettlementSearchRequest settlementSearchRequest);
 
         /// <summary>
         /// True if the Client has valid API Key, Password and Endpoint Set.

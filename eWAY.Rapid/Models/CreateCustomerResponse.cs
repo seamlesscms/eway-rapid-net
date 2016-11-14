@@ -8,7 +8,11 @@
         /// <summary>
         /// The Customer created by the method call. This will echo back the properties of the Customer adding the TokenCustomerID for the created customer. 
         /// </summary>
-        public Customer Customer { get; set; }
+        public Customer Customer
+        {
+            get;
+            set;
+        }
         /// <summary>
         /// (Only for payment method of ResponsiveShared) URL to the Responsive Shared Page that the cardholder's browser should be redirected to 
         /// to capture the card to save with the new customer.

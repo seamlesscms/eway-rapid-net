@@ -36,10 +36,15 @@ namespace eWAY.Rapid.Models
         /// Role or job description
         /// </summary>
         public string JobDescription { get; set; }
+
         /// <summary>
         /// Customer's address
         /// </summary>
-        public Address Address { get; set; }
+        public Address Address
+        {
+            get;
+            set;
+        }
         /// <summary>
         /// Customer's Phone
         /// </summary>
